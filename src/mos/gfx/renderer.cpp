@@ -630,6 +630,8 @@ void Renderer::render_shadow_maps(const Models &models, const Lights &lights) {
 }
 
 void Renderer::render_environment(const Scene &scene, const glm::vec4 &clear_color) {
+  glDisable(GL_BLEND);
+
   for (size_t i = 0; i < environment_maps_targets.size(); i++) {
     if (scene.environment_lights.at(i).strength > 0.0f) {
       GLuint frame_buffer_id = environment_maps_targets.at(i).frame_buffer;
@@ -759,7 +761,7 @@ void Renderer::render_environment(const Scene &scene, const glm::vec4 &clear_col
   glBindTexture(GL_TEXTURE_CUBE_MAP, propagate_target_.texture);
   glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
   glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-
+  glEnable(GL_BLEND);
 }
 void Renderer::load(const Mesh &mesh) {
   if (vertex_arrays_.find(mesh.id()) == vertex_arrays_.end()) {
@@ -1505,7 +1507,7 @@ Renderer::Environment_map_target::Environment_map_target(const Renderer::Render_
       data.push_back(0);
     }
     glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0,
-                 GL_RGB16F,
+                 GL_RGBA16F,
                  render_buffer.resolution, render_buffer.resolution, 0, GL_RGB,
                  GL_UNSIGNED_BYTE, data.data());
   }

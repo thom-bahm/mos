@@ -60,6 +60,8 @@ void main() {
   }
   irradiance /= 8.0;
 
+  float t = texture(environment_map, dir).a;
+
   vec3 albedo = texture(environment_albedo_map, dir).rgb;
 
   vec3 diffuse_environment = irradiance * albedo;
@@ -67,5 +69,5 @@ void main() {
   vec3 pass0 = texture(environment_map, dir).rgb;
 
   //TODO: 0.25 factor is not scientific. Attenuation?
-  color = vec4(diffuse_environment * 0.25 + pass0, 1.0);
+  color = vec4(diffuse_environment * 0.25 + pass0, t);
 }
