@@ -239,12 +239,15 @@ void main() {
         vec3 specular_environment = mix(refraction, filtered, F_env * brdf.x + brdf.y) * horiz * environments[i].strength;
 
         vec3 irradiance = sample_environment(environment_samplers[i], corrected_N, num_levels - 1.5, 0.5, 1.0);
+        float d = textureLod(environment_samplers[i], -normalize(environments[i].position -fragment.position), 3).a;
 
         const vec3 diffuse_environment = irradiance * albedo * environments[i].strength;
 
         attenuation = (attenuation == 0.0) ? environment_attenuation(fragment.position, environments[i].position, environments[i].extent, environments[i].falloff) : 1.0 - attenuation;
+        attenuation -= 1.0 - pow(d, 3);
 
         ambient += attenuation * clamp((kD_env * diffuse_environment * (1.0 - material.transmission) + specular_environment) * ambient_occlusion, vec3(0.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0));
+
         if (attenuation == 1.0) {
           break;
         }

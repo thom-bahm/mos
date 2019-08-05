@@ -78,6 +78,10 @@ void main() {
     vec4 albedo_from_map = texture(material.albedo_map, fragment.uv);
     vec3 albedo = mix(material.albedo.rgb, albedo_from_map.rgb, albedo_from_map.a);
 
+    if (albedo_from_map.a + material.albedo.a < 0.9 && material.emission == 0.0) {
+        discard;
+    }
+
     float metallic = material.metallic;
 
     float roughness = material.roughness;
@@ -139,7 +143,9 @@ void main() {
     float fog_att = fog_attenuation(distance, fog.attenuation_factor);
     vec3 fog_color = mix(fog.color_far, fog.color_near, fog_att);
     color.rgb = mix(fog_color, color.rgb, clamp(fog_att, 0.45, 1.0));
-    color.a = (distance - camera.near) / (camera.far - camera.near);
 
-    albedo_out = vec4(albedo * (1.0 - material.emission), (distance - camera.near) / (camera.far - camera.near));
+    //color.a = (distance - camera.near) / (camera.far - camera.near);
+    color.a = gl_FragCoord.z / gl_FragCoord.w;
+
+    albedo_out = vec4(albedo * (1.0 - material.emission), 1.0);
 }
